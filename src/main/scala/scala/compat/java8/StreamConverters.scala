@@ -16,7 +16,7 @@ trait PrimitiveStreamUnboxer[A, S] {
 
 trait Priority5StreamConverters {
   // Note--conversion is only to make sure implicit conversion priority is lower than alternatives.
-  implicit class EnrichScalaCollectionWithSeqStream[A, CC](cc: CC)(implicit steppize: CC => MakesAnySeqStepper[A])
+  implicit class EnrichScalaCollectionWithSeqStream[A <: AnyRef, CC](cc: CC)(implicit steppize: CC => MakesAnySeqStepper[A])
   extends MakesSequentialStream[A, Stream[A]] {
     def seqStream: Stream[A] = StreamSupport.stream(steppize(cc).stepper, false)
   }
@@ -62,7 +62,7 @@ trait Priority4StreamConverters extends Priority5StreamConverters {
 }
 
 trait Priority3StreamConverters extends Priority4StreamConverters {
-  implicit class EnrichAnySteppableWithStream[A, CC](cc: CC)(implicit steppize: CC => MakesAnyStepper[A]) 
+  implicit class EnrichAnySteppableWithStream[A <: AnyRef, CC](cc: CC)(implicit steppize: CC => MakesAnyStepper[A])
   extends MakesSequentialStream[A, Stream[A]] with MakesParallelStream[A, Stream[A]] {
     def seqStream: Stream[A] = StreamSupport.stream(steppize(cc).stepper, false)
     def parStream: Stream[A] = StreamSupport.stream(steppize(cc).stepper.anticipateParallelism, true)
